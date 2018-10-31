@@ -1,3 +1,5 @@
+import com.sun.jmx.remote.internal.ArrayQueue;
+
 import java.util.*;
 
 /*IMPORTANT NOTE:
@@ -13,8 +15,10 @@ public class Graph<V> implements GraphInterface<V>
 
 
 	/** Create and returns an adjacency lists from edge arrays */
-	public List<List<Edge>> createWeightedGraph(List<V> vertices,int[][] edges)
+	// Implemented by Jazmin Perez
+	public List<List<Edge>> createWeightedGraph(List<V> vertices, int[][] edges)
 	{
+
 		List<List<Edge>> neighbors = new ArrayList<>();
 		
 		/*TODO  ADD YOUR CODE IN THIS METHOD TO CREATE AN 
@@ -26,7 +30,6 @@ public class Graph<V> implements GraphInterface<V>
 		 * 
 		 * CHECK STRUCTURE OF EDGE CLASS BEFORE IMPLEMENTING YOUR CODE FOR ADJACENCY LIST 
 		 *  * */
-		
 		for(int i = 0; i < vertices.size(); i++){
 			List<Edge> edgeList = new ArrayList<>();
 			for(int j = 0; j < edges.length; j++){
@@ -37,6 +40,7 @@ public class Graph<V> implements GraphInterface<V>
 			}
 			neighbors.add(edgeList);
 		}
+
 		return neighbors;
 	}
 
@@ -44,21 +48,84 @@ public class Graph<V> implements GraphInterface<V>
 
 
 	/** Find single source shortest paths */
+	// Implemented by Jake Lyon
 	public Tree getShortestPath(
-			V sourceVertex,
-			List<V> vertices,
-			List<List<Edge>> neighbors)
+			V sourceVertex, // The root vertex of the tree
+			List<V> vertices, // The list of vertices in the tree
+			List<List<Edge>> neighbors) // Adjacency list with edge data
 	{
 		/*TODO  ADD YOUR CODE IN THIS METHOD TO CREATE A SHORTEST PATH TREE SUCH THAT
-		 * THE ROOT OF TREE IS sourceVertex AND PATH FROM sourceVertex (i.e. root) TO ANY OTHER NODE 
-		 * IN THE TREE IS THE SHORTEST PATH FROM sourceVertex TO THAT NODE IN GRAPH defined BY ADJACENCY LIST neighbors 
-		 * 
+		 * THE ROOT OF TREE IS sourceVertex AND PATH FROM sourceVertex (i.e. root) TO ANY OTHER NODE
+		 * IN THE TREE IS THE SHORTEST PATH FROM sourceVertex TO THAT NODE IN GRAPH defined BY ADJACENCY LIST neighbors
+		 *
 		 * RETURN THE TREE OBJECT
-		 * 
-		 * CHECK STRUCTURE OF TREE CLASS BEFORE IMPLEMENTING YOUR CODE FOR SHORTEST PATH TREE FROM VERTEX sourceVertex 
+		 *
+		 * CHECK STRUCTURE OF TREE CLASS BEFORE IMPLEMENTING YOUR CODE FOR SHORTEST PATH TREE FROM VERTEX sourceVertex
 		 *  * */
 
-		Tree shortestPath = null; //Temporarily null, will change once I figure this out
+		int numVertices = vertices.size();	// number of vertices in graph
+		int sourceIndex = vertices.indexOf(sourceVertex);
+		double weights[] = new double[numVertices];  // array of weights used to pick minimum cost path
+		int parents[] = new int[numVertices]; // each node has a parent node on its path
+		boolean marked[] = new boolean[numVertices]; // mark each vertex as it is visited
+
+		for (int i = 0; i < numVertices; i++)
+		{
+			weights[i] = Integer.MAX_VALUE;    //infinity represented by the maximum value of an integer
+			marked[i] = false;
+			parents[i] = -1;
+		}
+
+		//step 1, visit source
+		marked[sourceIndex] = true;
+		weights[sourceIndex] = 0;
+
+		boolean exit = false;
+
+		// Traverse the graph
+		while(exit == false)
+		{
+			// Update parents
+			for (int i = 0; i < parents.length; i++)
+				for (int j = 0; j < neighbors.get(i).size(); j++)
+					if ((neighbors.get(i).get(j).u == sourceIndex))
+						parents[neighbors.get(i).get(j).v] = neighbors.get(i).get(j).u;
+
+			// Update weights
+			for (int i = 0; i < weights.length; i++)
+				for (int j = 0; j < neighbors.get(i).size(); j++)
+					if ((parents[i] == sourceIndex) &&
+							(weights[i] > weights[sourceIndex] + neighbors.get(i).get(j).weight))
+					{
+						weights[i] = weights[sourceIndex] + neighbors.get(i).get(j).weight;
+					}
+
+			double minWeight = Double.MAX_VALUE;
+
+			for (int i = 0; i < weights.length; i++)
+			{
+				if (weights[i] < minWeight && (!marked[i]))
+					minWeight = weights[i];
+			}
+
+			// begin visiting next node
+			List temp = Arrays.asList(weights);
+			sourceIndex = temp.indexOf(weights);
+			marked[sourceIndex] = true;
+
+			int t = 0;
+			for(int i = 0; i < marked.length; i++)
+			{
+				if (marked[i] == true)
+					t++;
+			}
+
+			if(t == marked.length)
+				exit = true;
+		}
+
+
+		Tree shortestPath = new Tree(vertices.indexOf(sourceVertex), parents, weights); //new Tree(sourceVertex, parents, weights)
 
 		return shortestPath;
 	}
@@ -108,7 +175,7 @@ public class Graph<V> implements GraphInterface<V>
 		{
 			this.root 	= root;//Important
 			this.parent = parent;
-			this.parent[root] = -1; // WHY?
+			this.parent[root] = -1;
 			this.cost 	= cost;
 		}
 
@@ -160,6 +227,5 @@ public class Graph<V> implements GraphInterface<V>
 		}
 
 	}
-
 
 }
