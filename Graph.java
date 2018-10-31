@@ -27,11 +27,11 @@ public class Graph<V> implements GraphInterface<V>
 		 * CHECK STRUCTURE OF EDGE CLASS BEFORE IMPLEMENTING YOUR CODE FOR ADJACENCY LIST 
 		 *  * */
 		
-		for(Vertex vertex : vertices){
+		for(int i = 0; i < vertices.size(); i++){
 			List<Edge> edgeList = new ArrayList<>();
-			for(Edge edge : edges){
-				if(edges[i][0] == vertices.indexOf(vertex)){
-					Edge e = new Edge(Edges[i][0], Edges[i][1], Edges[i][2]);
+			for(int j = 0; j < edges.length; j++){
+				if(edges[i][0] == vertices.indexOf(i)){
+					Edge e = new Edge(edges[i][0], edges[i][1], edges[i][2]);
 					edgeList.add(e);
 				}
 			}
