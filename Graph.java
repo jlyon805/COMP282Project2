@@ -13,11 +13,8 @@ public class Graph<V> implements GraphInterface<V>
 
 
 	/** Create and returns an adjacency lists from edge arrays */
-	public List<List<Edge>> createWeightedGraph(
-			List<V> vertices,
-			int[][] edges)
+	public List<List<Edge>> createWeightedGraph(List<V> vertices,int[][] edges)
 	{
-		
 		List<List<Edge>> neighbors = new ArrayList<>();
 		
 		/*TODO  ADD YOUR CODE IN THIS METHOD TO CREATE AN 
@@ -29,6 +26,17 @@ public class Graph<V> implements GraphInterface<V>
 		 * 
 		 * CHECK STRUCTURE OF EDGE CLASS BEFORE IMPLEMENTING YOUR CODE FOR ADJACENCY LIST 
 		 *  * */
+		
+		for(Vertex vertex : vertices){
+			List<Edge> edgeList = new ArrayList<>();
+			for(Edge edge : edges){
+				if(edges[i][0] == vertices.indexOf(vertex)){
+					Edge e = new Edge(Edges[i][0], Edges[i][1], Edges[i][2]);
+					edgeList.add(e);
+				}
+			}
+			neighbors.add(edgeList);
+		}
 		return neighbors;
 	}
 
